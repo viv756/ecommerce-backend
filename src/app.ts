@@ -21,6 +21,7 @@ app.get("/", (req, res) => {
 app.use("/api/v1/user", userRouter);
 app.use("/api/v1/product", productRouter);
 
+app.use("/uploads", express.static("uploads"));
 app.use(errorMiddleware);
 
 app.listen(port, () => {
