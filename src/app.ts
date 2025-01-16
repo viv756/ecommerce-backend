@@ -1,4 +1,5 @@
 import express from "express";
+import { errorMiddleware } from "./middlewares/error.js";
 
 // importing routes
 import userRouter from "./routes/userRoute.js";
@@ -8,6 +9,7 @@ const port = 3000;
 connectDB();
 
 const app = express();
+
 app.use(express.json());
 
 app.get("/", (req, res) => {
@@ -16,6 +18,8 @@ app.get("/", (req, res) => {
 
 // Using routes
 app.use("/api/v1/user", userRouter);
+
+app.use(errorMiddleware);
 
 app.listen(port, () => {
   console.log(`server is listtening ${port}`);
