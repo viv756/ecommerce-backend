@@ -6,6 +6,6 @@ const router = express.Router();
 
 router.post("/new", newUser);
 router.get("/all", adminOnly, getAllUsers);
-router.get("/:id").get("/:id", getUser).delete("/:id", adminOnly, deleteUser);
+router.route("/:id").get(getUser).delete(adminOnly, deleteUser);
 
 export default router;
