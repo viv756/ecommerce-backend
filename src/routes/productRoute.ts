@@ -13,10 +13,14 @@ import { singleUpload } from "../middlewares/multer.js";
 
 const router = express.Router();
 
-router.post("/new",  singleUpload, newProduct);
+router.post("/new", singleUpload, newProduct);
 router.get("/latest", getlatestProducts);
 router.get("/categories", getAllCategories);
 router.get("/admin-products", adminOnly, getAdminProducts);
-router.route("/:id").get(getSingleProduct).put(singleUpload, updateProduct).delete(deleteProduct);
+router
+  .route("/:id")
+  .get(getSingleProduct)
+  .put(adminOnly, singleUpload, updateProduct)
+  .delete(adminOnly, deleteProduct);
 
 export default router;

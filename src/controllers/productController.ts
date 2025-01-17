@@ -103,6 +103,7 @@ export const updateProduct = TryCatch(async (req, res, next) => {
 });
 
 export const deleteProduct = TryCatch(async (req, res, next) => {
+  
   const product = await Product.findById(req.params.id);
   if (!product) return next(new ErrorHandler("Product Not Found", 404));
 
