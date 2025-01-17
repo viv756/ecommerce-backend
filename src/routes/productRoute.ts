@@ -1,18 +1,22 @@
 import express from "express";
 import { adminOnly } from "../middlewares/auth.js";
 import {
+  deleteProduct,
   getAdminProducts,
   getAllCategories,
   getlatestProducts,
+  getSingleProduct,
   newProduct,
+  updateProduct,
 } from "../controllers/productController.js";
 import { singleUpload } from "../middlewares/multer.js";
 
 const router = express.Router();
 
-router.post("/new", adminOnly, singleUpload, newProduct);
+router.post("/new",  singleUpload, newProduct);
 router.get("/latest", getlatestProducts);
 router.get("/categories", getAllCategories);
 router.get("/admin-products", adminOnly, getAdminProducts);
+router.route("/:id").get(getSingleProduct).put(singleUpload, updateProduct).delete(deleteProduct);
 
 export default router;

@@ -6,12 +6,12 @@ import ErrorHandler from "../utils/utility-class.js";
 
 export const newProduct = TryCatch(
   async (req: Request<{}, {}, NewProductrequestBody>, res, next) => {
-    const { name, price, stock, category, description } = req.body;
+    const { name, price, stock, category } = req.body;
     const photo = req.file;
 
     if (!photo) return next(new ErrorHandler("Please add Photo", 400));
 
-    if (!name || !price || !stock || !category || !description) {
+    if (!name || !price || !stock || !category) {
       rm(photo.path, () => {
         console.log("Deleted");
       });
@@ -21,7 +21,6 @@ export const newProduct = TryCatch(
     await Product.create({
       name,
       price,
-      description,
       stock,
       category: category.toLowerCase(),
       photos: photo?.path,
@@ -52,12 +51,69 @@ export const getAllCategories = TryCatch(async (req, res, next) => {
   });
 });
 
-
 export const getAdminProducts = TryCatch(async (req, res, next) => {
-  const products = await Product.find({})
+  const products = await Product.find({});
 
   return res.status(200).json({
     success: true,
     products,
+  });
+});
+
+export const getSingleProduct = TryCatch(async (req, res, next) => {
+  const id = req.params.id;
+
+  const product = await Product.findById(id);
+  if (!product) {
+    return next(new ErrorHandler("Product not found", 404));
+  }
+
+  return res.status(200).json({
+    success: true,
+    product,
+  });
+});
+
+export const updateProduct = TryCatch(async (req, res, next) => {
+  const { id } = req.params;
+  const { name, price, stock, category } = req.body;
+  const photo = req.file;
+  const product = await Product.findById(id);
+  if (!product) return next(new ErrorHandler("Product Not Found", 404));
+
+  if (photo) {
+    rm(product.photos!, () => {
+      console.log("Old Photo Deleted");
+    });
+
+    product.photos = photo.path;
+  }
+
+  if (name) product.name = name;
+  if (price) product.price = price;
+  if (stock) product.stock = stock;
+  if (category) product.category = category;
+
+  await product.save();
+
+  return res.status(200).json({
+    success: true,
+    message: "Product Updated Successfully",
+  });
+});
+
+export const deleteProduct = TryCatch(async (req, res, next) => {
+  const product = await Product.findById(req.params.id);
+  if (!product) return next(new ErrorHandler("Product Not Found", 404));
+
+  rm(product.photos!, () => {
+    console.log("product Photo Deleted");
+  });
+
+  await product.deleteOne();
+
+  return res.status(200).json({
+    success: true,
+    message: "Product Deleted Successfully",
   });
 });
